@@ -62,12 +62,16 @@
   margin-bottom: 15px;
   border-bottom: 1px solid rgba(144, 180, 197, 0.2);
   flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.95);
+  margin: -20px -20px 15px -20px;
+  padding: 20px;
+  border-radius: 16px 16px 0 0;
 }
 
 .header-left {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
 }
 
 .logo {
@@ -81,24 +85,25 @@
   margin: 0;
   font-weight: 600;
   line-height: 1;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
 }
 
 /* Control buttons */
 .header-controls {
   display: flex;
-  gap: 4px;
+  gap: 6px;
 }
 
 .control-button {
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
   padding: 0;
   background: transparent;
   border: 1px solid rgba(144, 180, 197, 0.3);
-  border-radius: 4px;
+  border-radius: 6px;
   color: #4a5567;
   cursor: pointer;
-  font-size: 18px;
+  font-size: 16px;
   line-height: 1;
   display: flex;
   align-items: center;
@@ -107,7 +112,7 @@
 }
 
 .control-button:hover {
-  background: rgba(144, 180, 197, 0.1);
+  background: rgba(144, 180, 197, 0.15);
   color: #2c4a5e;
 }
 
@@ -192,17 +197,56 @@
 /* Update tab spacing */
 .tabs {
   display: flex;
-  gap: 8px;
-  padding: 0;
-  margin-bottom: 15px;
+  padding: 15px 0;
+  margin: 0 -5px; /* Negative margin to align with scroll area */
   flex-shrink: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; /* Firefox */
+  white-space: nowrap;
 }
 
+/* Hide scrollbar but keep functionality */
+.tabs::-webkit-scrollbar {
+  display: none;
+}
+
+/* Tab buttons */
 .tab-btn {
-  flex: 1;
-  padding: 8px 12px;
-  font-size: 14px;
-  font-weight: 500;
+  flex: 0 0 auto; /* Don't grow or shrink, stay at content width */
+  padding: 8px 16px;
+  background: transparent;
+  border: 1px solid rgba(144, 180, 197, 0.2);
+  border-radius: 8px;
+  color: #4a5567;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  font-size: 13px;
+  margin: 0 5px;
+  white-space: nowrap;
+}
+
+/* Tab button content */
+.tab-btn span {
+  font-size: 15px;
+  display: inline-block;
+}
+
+/* Active and hover states */
+.tab-btn.active {
+  background: rgba(144, 180, 197, 0.1);
+  border-color: rgba(144, 180, 197, 0.4);
+  color: #2c4a5e;
+}
+
+.tab-btn:hover {
+  background: rgba(144, 180, 197, 0.05);
 }
 
 /* Content area adjustments */
