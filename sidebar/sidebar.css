@@ -2,24 +2,24 @@
   position: fixed;
   bottom: 20px;
   right: 20px;
-  width: 300px; /* Smaller default width */
-  height: 400px;
-  background: rgba(255, 253, 250, 0.92);
+  width: 360px; /* Fixed width */
+  height: 480px; /* Fixed height for compact mode */
+  background: rgba(255, 253, 250, 0.97);
   box-shadow: 0 2px 20px rgba(144, 180, 197, 0.2);
   border: 2px solid rgba(144, 180, 197, 0.3);
   border-radius: 16px;
   z-index: 10000;
   padding: 20px;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  overflow-y: auto;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden; /* Hide overflow */
   color: #4a5567;
   backdrop-filter: blur(8px);
+  display: flex;
+  flex-direction: column;
 }
 
 .perplexity-sidebar.expanded {
-  width: 400px;
   height: calc(100vh - 40px);
-  bottom: 20px;
 }
 
 .perplexity-sidebar::-webkit-scrollbar {
@@ -42,60 +42,113 @@
 /* Cute toggle button with Ghibli-style */
 #perplexity-toggle {
   position: absolute;
-  top: 12px;
-  right: -30px;
-  width: 30px;
-  height: 30px;
-  background: rgba(255, 253, 250, 0.92);
+  top: 50%;
+  right: -28px;
+  transform: translateY(-50%);
+  width: 28px;
+  height: 28px;
+  background: #fff;
   border: 2px solid rgba(144, 180, 197, 0.3);
   border-left: none;
-  font-size: 18px;
-  transition: all 0.3s ease;
+  border-radius: 0 6px 6px 0;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  color: #2c4a5e;
-  border-radius: 0 8px 8px 0;
-  box-shadow: 3px 0 10px rgba(144, 180, 197, 0.1);
+  color: #4a5567;
+  transition: all 0.2s ease;
 }
 
 #perplexity-toggle:hover {
+  color: #2c4a5e;
   background: rgba(144, 180, 197, 0.1);
-  right: -35px;
 }
 
+/* Header styling */
 .sidebar-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin: -5px -10px 15px -10px;
-  padding: 0 10px 15px 10px;
-  border-bottom: 2px solid rgba(144, 180, 197, 0.2);
-  cursor: pointer;
-  transition: background-color 0.3s ease;
+  padding-bottom: 15px;
+  margin-bottom: 15px;
+  border-bottom: 1px solid rgba(144, 180, 197, 0.2);
+  flex-shrink: 0;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logo {
+  font-size: 22px;
+  display: flex;
+  align-items: center;
 }
 
 .sidebar-header h2 {
-  font-size: 18px;
+  font-size: 20px;
   color: #2c4a5e;
   margin: 0;
   font-weight: 600;
-  opacity: 0.9;
 }
 
-.refresh-button {
+/* Expand button styling */
+.expand-button {
   width: 28px;
   height: 28px;
-  font-size: 16px;
-  opacity: 0.7;
-  border: none;
+  padding: 0;
   background: transparent;
+  border: 1px solid rgba(144, 180, 197, 0.3);
+  border-radius: 6px;
+  color: #4a5567;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
 }
 
-.refresh-button:hover {
-  opacity: 1;
+.expand-button:hover {
   background: rgba(144, 180, 197, 0.1);
+  color: #2c4a5e;
+}
+
+.expand-button svg {
+  transition: transform 0.2s ease;
+}
+
+.expand-button:hover svg {
+  transform: scale(1.1);
+}
+
+/* Update tab spacing */
+.tabs {
+  display: flex;
+  gap: 8px;
+  padding: 0;
+  margin-bottom: 15px;
+  flex-shrink: 0;
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 8px 12px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Content area adjustments */
+.tab-content {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: 0 5px;
+}
+
+/* Remove any old size toggle styles */
+#size-toggle {
+  display: none;
 }
 
 /* Content styling */
@@ -362,8 +415,8 @@
 .tabs {
   display: flex;
   gap: 5px;
-  padding: 0 5px;
-  margin-bottom: 15px;
+  padding: 15px 0;
+  flex-shrink: 0; /* Prevent tabs from shrinking */
 }
 
 .tab-btn {
@@ -500,4 +553,26 @@
 .error-message h3::before {
   content: "😿";
   font-size: 24px;
+}
+
+/* Content area */
+.tab-content {
+  flex-grow: 1;
+  overflow-y: auto;
+  margin: 0 -20px;
+  padding: 15px 20px;
+}
+
+/* Scrollbar styling */
+.tab-content::-webkit-scrollbar {
+  width: 4px;
+}
+
+.tab-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.tab-content::-webkit-scrollbar-thumb {
+  background: rgba(144, 180, 197, 0.3);
+  border-radius: 10px;
 } 

@@ -164,12 +164,12 @@ Make sure each site has a clear title, working URL, and concise explanation of i
         <div class="header-left">
           <div class="logo">😺</div>
           <h2>PurrSpective</h2>
-          <button id="size-toggle" onclick="document.querySelector('#size-toggle').click()">🐱</button>
         </div>
-        <div class="header-right">
-          <button onclick="window.location.reload()" class="refresh-button">��</button>
-          ${this.toggleButton.outerHTML}
-        </div>
+        <button id="expand-toggle" class="expand-button">
+          <svg width="14" height="14" viewBox="0 0 14 14">
+            <path d="M7 2v10M2 7h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
       </div>
       <div class="tabs">
         <button class="tab-btn active" data-tab="summary">
@@ -201,6 +201,9 @@ Make sure each site has a clear title, working URL, and concise explanation of i
         this.switchTab(button.dataset.tab);
       });
     });
+
+    // Add expand button functionality
+    document.getElementById('expand-toggle').onclick = () => this.toggleSize();
   }
 
   markdownToHtml(markdown) {
@@ -244,13 +247,20 @@ Make sure each site has a clear title, working URL, and concise explanation of i
   toggleSidebar() {
     this.sidebarVisible = !this.sidebarVisible;
     this.sidebar.classList.toggle('hidden');
-    this.toggleButton.innerHTML = this.sidebarVisible ? '→' : '←';
+    this.toggleButton.innerHTML = this.sidebarVisible ? 
+      '<svg width="16" height="16" viewBox="0 0 16 16"><path d="M6 12l4-4-4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg>' :
+      '<svg width="16" height="16" viewBox="0 0 16 16"><path d="M10 12l-4-4 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg>';
   }
 
   toggleSize() {
     this.isCompact = !this.isCompact;
     this.sidebar.classList.toggle('expanded');
-    this.sizeToggle.innerHTML = this.isCompact ? '⇄' : '⇆';
+    const expandButton = document.getElementById('expand-toggle');
+    if (expandButton) {
+      expandButton.innerHTML = this.isCompact ? 
+        '<svg width="14" height="14" viewBox="0 0 14 14"><path d="M7 2v10M2 7h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>' :
+        '<svg width="14" height="14" viewBox="0 0 14 14"><path d="M2 7h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
+    }
   }
 
   switchTab(tabId) {
