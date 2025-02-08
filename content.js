@@ -1,54 +1,48 @@
 class PurrSpectiveSidebar {
   constructor() {
-    this.sidebarVisible = true;
-    this.isCompact = true;  // Start in compact mode
-    this.activeTab = 'summary';  // Default tab
+    this.state = 'small'; // 'logo', 'small', or 'large'
+    this.activeTab = 'summary';
+    this.currentContent = null; // Store current content for state changes
     this.initialize();
   }
 
   async initialize() {
-    // Create sidebar container
+    // Create cat logo button (shown when sidebar is hidden)
+    this.logoButton = document.createElement('button');
+    this.logoButton.id = 'purr-logo';
+    this.logoButton.className = 'logo-button';
+    this.logoButton.innerHTML = `<span class="logo">😺</span>`;
+    this.logoButton.onclick = () => this.setState('small');
+
+    // Create sidebar
     this.sidebar = document.createElement('div');
     this.sidebar.id = 'perplexity-sidebar';
     this.sidebar.className = 'perplexity-sidebar';
 
-    // Create hide button
-    this.toggleButton = document.createElement('button');
-    this.toggleButton.id = 'perplexity-toggle';
-    this.toggleButton.innerHTML = '→';
-    this.toggleButton.onclick = () => this.toggleSidebar();
-
-    // Make the header also clickable for toggling
-    const handleHeaderClick = (e) => {
-      // Only toggle if clicking the header area, not its children
-      if (e.target.closest('.refresh-button')) return;
-      this.toggleSidebar();
-    };
-
-    // Add click handler after content is loaded
-    const observer = new MutationObserver((mutations) => {
-      const header = this.sidebar.querySelector('.sidebar-header');
-      if (header && !header.onclick) {
-        header.onclick = handleHeaderClick;
-      }
-    });
-
-    observer.observe(this.sidebar, { childList: true, subtree: true });
-
-    // Add elements to page
+    // Add to page
+    document.body.appendChild(this.logoButton);
     document.body.appendChild(this.sidebar);
-    document.body.appendChild(this.toggleButton);
 
-    // Check for API key and show appropriate content
+    // Check if we're on a search engine
+    const isSearchEngine = this.isSearchEngineSite();
+    
+    // Start with logo only if on search engine
+    this.setState(isSearchEngine ? 'logo' : 'small');
+
     await this.checkApiKeyAndLoad();
+    this.addStyles();
+  }
 
-    // Add size toggle button
-    this.sizeToggle = document.createElement('button');
-    this.sizeToggle.id = 'size-toggle';
-    this.sizeToggle.innerHTML = '⇄';
-    this.sizeToggle.onclick = () => this.toggleSize();
-
-    this.addAnalysisStyles();
+  isSearchEngineSite() {
+    const searchEngines = [
+      'google.com',
+      'bing.com',
+      'duckduckgo.com',
+      'yahoo.com',
+      'baidu.com',
+      'yandex.com'
+    ];
+    return searchEngines.some(engine => window.location.hostname.includes(engine));
   }
 
   async checkApiKeyAndLoad() {
@@ -91,32 +85,52 @@ class PurrSpectiveSidebar {
   async loadRelatedSites() {
     const currentUrl = window.location.href;
     const pageTitle = document.title;
-    const prompt = `For the webpage "${pageTitle}" at ${currentUrl}, provide:
-1. A brief summary of what this page is about (2-3 sentences)
-2. A critical analysis of the content (key points, potential biases, credibility)
-3. Then find 5 most interesting related websites.
+    const pageContent = document.body.innerText.substring(0, 2000); // Get first 2000 chars of content
 
-Return the response in this markdown format:
+    const prompt = `Analyze this webpage:
+Title: "${pageTitle}"
+URL: ${currentUrl}
+Content excerpt: "${pageContent}"
+
+Provide:
+1. A brief summary (2-3 sentences)
+2. Hoax Analysis:
+   - Credibility score (0-100%)
+   - Potential misinformation flags
+   - Source reputation
+   - Fact-checking status
+3. Trust Assessment:
+   - Domain authority
+   - Content quality indicators
+   - Citation/reference quality
+   - Transparency factors
+4. Critical analysis (biases, credibility)
+5. Related trustworthy sources
+
+Return in this format:
 
 Summary
 ---
-[Your 2-3 sentence summary here]
+[Summary here]
+
+Hoax Analysis
+---
+Credibility Score: [X]%
+[Detailed hoax analysis]
+
+Trust Assessment
+---
+Trust Score: [X]%
+[Detailed trust analysis]
 
 Analysis
 ---
-[Critical analysis of the content, including:
-- Key points
-- Potential biases
-- Credibility assessment
-- Notable observations]
+[Critical analysis]
 
 Related Sites
 ---
-
 ▸ [Site Title](URL)
-Brief description of why this site is relevant.
-
-Make sure each site has a clear title, working URL, and concise explanation of its relevance.`;
+[Why this source is reliable + relevance]`;
 
     try {
       this.showLoading();
@@ -157,19 +171,37 @@ Make sure each site has a clear title, working URL, and concise explanation of i
   }
 
   displayResults(markdownContent) {
+    this.currentContent = markdownContent; // Store for state changes
     const htmlContent = this.markdownToHtml(markdownContent);
     
     this.sidebar.innerHTML = `
       <div class="sidebar-header">
         <div class="header-left">
-          <div class="logo">😺</div>
-          <h2>PurrSpective</h2>
+          <span class="logo">😺</span><h2>PurrSpective</h2>
         </div>
-        <button id="expand-toggle" class="expand-button">
-          <svg width="14" height="14" viewBox="0 0 14 14">
-            <path d="M7 2v10M2 7h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-        </button>
+        <div class="header-controls">
+          ${this.state === 'small' ? 
+            `<button class="control-button" id="maximize-btn" title="Maximize">+</button>` :
+            `<button class="control-button" id="minimize-btn" title="Minimize">−</button>`
+          }
+          <button class="control-button" id="hide-btn" title="Hide">×</button>
+        </div>
+      </div>
+      <div class="trust-meters">
+        <div class="meter credibility">
+          <div class="meter-label">Credibility</div>
+          <div class="meter-bar">
+            <div class="meter-fill" id="credibility-fill"></div>
+          </div>
+          <div class="meter-value" id="credibility-value">--</div>
+        </div>
+        <div class="meter trust">
+          <div class="meter-label">Trust</div>
+          <div class="meter-bar">
+            <div class="meter-fill" id="trust-fill"></div>
+          </div>
+          <div class="meter-value" id="trust-value">--</div>
+        </div>
       </div>
       <div class="tabs">
         <button class="tab-btn active" data-tab="summary">
@@ -180,6 +212,9 @@ Make sure each site has a clear title, working URL, and concise explanation of i
         </button>
         <button class="tab-btn" data-tab="related">
           <span>😸</span> Related
+        </button>
+        <button class="tab-btn" data-tab="hoax">
+          <span>🔍</span> Fact Check
         </button>
       </div>
       <div class="tab-content">
@@ -195,15 +230,35 @@ Make sure each site has a clear title, working URL, and concise explanation of i
       </div>
     `;
 
-    // Add tab switching functionality
+    this.setupEventListeners();
+    this.updateTrustMeters(htmlContent);
+  }
+
+  setupEventListeners() {
+    // Maximize button (in small mode)
+    const maximizeBtn = document.getElementById('maximize-btn');
+    if (maximizeBtn) {
+      maximizeBtn.onclick = () => this.setState('large');
+    }
+
+    // Minimize button (in large mode)
+    const minimizeBtn = document.getElementById('minimize-btn');
+    if (minimizeBtn) {
+      minimizeBtn.onclick = () => this.setState('small');
+    }
+
+    // Hide button (in both modes)
+    const hideBtn = document.getElementById('hide-btn');
+    if (hideBtn) {
+      hideBtn.onclick = () => this.setState('logo');
+    }
+
+    // Tab switching
     this.sidebar.querySelectorAll('.tab-btn').forEach(button => {
       button.addEventListener('click', () => {
         this.switchTab(button.dataset.tab);
       });
     });
-
-    // Add expand button functionality
-    document.getElementById('expand-toggle').onclick = () => this.toggleSize();
   }
 
   markdownToHtml(markdown) {
@@ -244,33 +299,31 @@ Make sure each site has a clear title, working URL, and concise explanation of i
       .join('\n');
   }
 
-  toggleSidebar() {
-    this.sidebarVisible = !this.sidebarVisible;
-    this.sidebar.classList.toggle('hidden');
-    this.toggleButton.innerHTML = this.sidebarVisible ? 
-      '<svg width="16" height="16" viewBox="0 0 16 16"><path d="M6 12l4-4-4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg>' :
-      '<svg width="16" height="16" viewBox="0 0 16 16"><path d="M10 12l-4-4 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg>';
-  }
-
-  toggleSize() {
-    this.isCompact = !this.isCompact;
-    this.sidebar.classList.toggle('expanded');
-    const expandButton = document.getElementById('expand-toggle');
-    if (expandButton) {
-      expandButton.innerHTML = this.isCompact ? 
-        '<svg width="14" height="14" viewBox="0 0 14 14"><path d="M7 2v10M2 7h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>' :
-        '<svg width="14" height="14" viewBox="0 0 14 14"><path d="M2 7h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
+  setState(newState) {
+    this.state = newState;
+    
+    // Update classes and visibility
+    switch (newState) {
+      case 'logo':
+        this.sidebar.classList.add('hidden');
+        this.logoButton.classList.remove('hidden');
+        break;
+      case 'small':
+        this.sidebar.classList.remove('hidden', 'expanded');
+        this.logoButton.classList.add('hidden');
+        if (this.currentContent) {
+          this.displayResults(this.currentContent);
+        }
+        break;
+      case 'large':
+        this.sidebar.classList.remove('hidden');
+        this.sidebar.classList.add('expanded');
+        this.logoButton.classList.add('hidden');
+        if (this.currentContent) {
+          this.displayResults(this.currentContent);
+        }
+        break;
     }
-  }
-
-  switchTab(tabId) {
-    this.activeTab = tabId;
-    this.sidebar.querySelectorAll('.tab-btn').forEach(btn => {
-      btn.classList.toggle('active', btn.dataset.tab === tabId);
-    });
-    this.sidebar.querySelectorAll('.tab-pane').forEach(pane => {
-      pane.classList.toggle('active', pane.id === tabId);
-    });
   }
 
   getSummaryContent(htmlContent) {
@@ -320,7 +373,7 @@ Make sure each site has a clear title, working URL, and concise explanation of i
     `;
   }
 
-  addAnalysisStyles() {
+  addStyles() {
     const style = document.createElement('style');
     style.textContent = `
       .summary-content,
@@ -368,6 +421,49 @@ Make sure each site has a clear title, working URL, and concise explanation of i
       }
     `;
     document.head.appendChild(style);
+  }
+
+  switchTab(tabId) {
+    this.activeTab = tabId;
+    this.sidebar.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.tab === tabId);
+    });
+    this.sidebar.querySelectorAll('.tab-pane').forEach(pane => {
+      pane.classList.toggle('active', pane.id === tabId);
+    });
+  }
+
+  updateTrustMeters(htmlContent) {
+    // Extract scores from content
+    const credibilityMatch = htmlContent.match(/Credibility Score: (\d+)%/);
+    const trustMatch = htmlContent.match(/Trust Score: (\d+)%/);
+
+    const credibilityScore = credibilityMatch ? parseInt(credibilityMatch[1]) : 0;
+    const trustScore = trustMatch ? parseInt(trustMatch[1]) : 0;
+
+    // Update UI
+    const credFill = document.getElementById('credibility-fill');
+    const credValue = document.getElementById('credibility-value');
+    const trustFill = document.getElementById('trust-fill');
+    const trustValue = document.getElementById('trust-value');
+
+    if (credFill && credValue) {
+      credFill.style.width = `${credibilityScore}%`;
+      credValue.textContent = `${credibilityScore}%`;
+      credFill.className = `meter-fill ${this.getScoreClass(credibilityScore)}`;
+    }
+
+    if (trustFill && trustValue) {
+      trustFill.style.width = `${trustScore}%`;
+      trustValue.textContent = `${trustScore}%`;
+      trustFill.className = `meter-fill ${this.getScoreClass(trustScore)}`;
+    }
+  }
+
+  getScoreClass(score) {
+    if (score >= 80) return 'high';
+    if (score >= 60) return 'medium';
+    return 'low';
   }
 }
 

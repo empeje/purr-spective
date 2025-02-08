@@ -2,8 +2,8 @@
   position: fixed;
   bottom: 20px;
   right: 20px;
-  width: 360px; /* Fixed width */
-  height: 480px; /* Fixed height for compact mode */
+  width: 360px;
+  height: 480px; /* Default small mode height */
   background: rgba(255, 253, 250, 0.97);
   box-shadow: 0 2px 20px rgba(144, 180, 197, 0.2);
   border: 2px solid rgba(144, 180, 197, 0.3);
@@ -11,11 +11,14 @@
   z-index: 10000;
   padding: 20px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  overflow: hidden; /* Hide overflow */
+  overflow: hidden;
   color: #4a5567;
   backdrop-filter: blur(8px);
   display: flex;
   flex-direction: column;
+  transform: translateX(0);
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .perplexity-sidebar.expanded {
@@ -37,31 +40,17 @@
 
 .perplexity-sidebar.hidden {
   transform: translateX(calc(100% + 20px));
+  opacity: 0;
+  pointer-events: none;
+}
+
+.perplexity-sidebar.hidden:hover {
+  opacity: 1;
 }
 
 /* Cute toggle button with Ghibli-style */
 #perplexity-toggle {
-  position: absolute;
-  top: 50%;
-  right: -28px;
-  transform: translateY(-50%);
-  width: 28px;
-  height: 28px;
-  background: #fff;
-  border: 2px solid rgba(144, 180, 197, 0.3);
-  border-left: none;
-  border-radius: 0 6px 6px 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  color: #4a5567;
-  transition: all 0.2s ease;
-}
-
-#perplexity-toggle:hover {
-  color: #2c4a5e;
-  background: rgba(144, 180, 197, 0.1);
+  display: none;
 }
 
 /* Header styling */
@@ -69,7 +58,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-bottom: 15px;
+  padding-bottom: 12px;
   margin-bottom: 15px;
   border-bottom: 1px solid rgba(144, 180, 197, 0.2);
   flex-shrink: 0;
@@ -78,13 +67,12 @@
 .header-left {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
 
 .logo {
-  font-size: 22px;
-  display: flex;
-  align-items: center;
+  font-size: 20px;
+  line-height: 1;
 }
 
 .sidebar-header h2 {
@@ -92,6 +80,84 @@
   color: #2c4a5e;
   margin: 0;
   font-weight: 600;
+  line-height: 1;
+}
+
+/* Control buttons */
+.header-controls {
+  display: flex;
+  gap: 4px;
+}
+
+.control-button {
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  background: transparent;
+  border: 1px solid rgba(144, 180, 197, 0.3);
+  border-radius: 4px;
+  color: #4a5567;
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.control-button:hover {
+  background: rgba(144, 180, 197, 0.1);
+  color: #2c4a5e;
+}
+
+/* Size toggle specific styles */
+#size-toggle {
+  font-family: system-ui, -apple-system, sans-serif;
+  font-weight: 400;
+}
+
+/* Hide button specific styles */
+#hide-toggle {
+  padding-top: 1px;
+}
+
+#hide-toggle svg {
+  transform: rotate(0);
+  transition: transform 0.3s ease;
+}
+
+.perplexity-sidebar.hidden #hide-toggle svg {
+  transform: rotate(180deg);
+}
+
+/* Sidebar states */
+.perplexity-sidebar {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 360px;
+  height: 480px; /* Default small mode height */
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(0);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.perplexity-sidebar.expanded {
+  height: calc(100vh - 40px);
+}
+
+.perplexity-sidebar.hidden {
+  transform: translateX(calc(100% + 20px));
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Remove old toggle styles */
+#perplexity-toggle,
+#size-toggle {
+  display: none;
 }
 
 /* Expand button styling */
@@ -144,11 +210,6 @@
   flex-grow: 1;
   overflow-y: auto;
   padding: 0 5px;
-}
-
-/* Remove any old size toggle styles */
-#size-toggle {
-  display: none;
 }
 
 /* Content styling */
@@ -370,12 +431,6 @@
   transition: opacity 0.2s ease;
 }
 
-/* Add hover effect to show the sidebar is interactive */
-.perplexity-sidebar.hidden:hover {
-  transform: translateX(calc(100% + 25px));
-  box-shadow: 0 -2px 20px rgba(144, 180, 197, 0.25);
-}
-
 /* Add subtle indicator that header is clickable */
 .sidebar-header::after {
   content: '';
@@ -575,4 +630,153 @@
 .tab-content::-webkit-scrollbar-thumb {
   background: rgba(144, 180, 197, 0.3);
   border-radius: 10px;
+}
+
+/* Show button styling */
+.show-button {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 253, 250, 0.97);
+  border: 2px solid rgba(144, 180, 197, 0.3);
+  border-radius: 12px;
+  z-index: 10000;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 20px rgba(144, 180, 197, 0.2);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.show-button.hidden {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.show-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 2px 25px rgba(144, 180, 197, 0.3);
+}
+
+.show-button .logo {
+  font-size: 22px;
+  margin: 0;
+  animation: none;
+}
+
+.show-button:hover .logo {
+  animation: bounce 1s infinite;
+}
+
+/* Update sidebar transition */
+.perplexity-sidebar {
+  transform: translateX(0);
+  opacity: 1;
+  pointer-events: auto;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.perplexity-sidebar.hidden {
+  transform: translateX(calc(100% + 20px));
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Remove old toggle styles that might interfere */
+#perplexity-toggle,
+#size-toggle {
+  display: none;
+}
+
+/* Logo button (shown when sidebar is hidden) */
+.logo-button {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 40px;
+  height: 40px;
+  background: #FFFFFF;
+  border: 1px solid rgba(144, 180, 197, 0.3);
+  border-radius: 8px;
+  z-index: 10000;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(144, 180, 197, 0.15);
+}
+
+.logo-button .logo {
+  font-size: 20px;
+  margin: 0;
+  line-height: 1;
+}
+
+.logo-button.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.logo-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 2px 25px rgba(144, 180, 197, 0.3);
+}
+
+/* Trust meters */
+.trust-meters {
+  display: flex;
+  gap: 15px;
+  padding: 10px 15px;
+  background: rgba(144, 180, 197, 0.08);
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+
+.meter {
+  flex: 1;
+}
+
+.meter-label {
+  font-size: 12px;
+  color: #4a5567;
+  margin-bottom: 4px;
+}
+
+.meter-bar {
+  height: 6px;
+  background: rgba(144, 180, 197, 0.2);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.meter-fill {
+  height: 100%;
+  width: 0;
+  transition: width 1s ease-out;
+}
+
+.meter-fill.high {
+  background: #4CAF50;
+}
+
+.meter-fill.medium {
+  background: #FFC107;
+}
+
+.meter-fill.low {
+  background: #F44336;
+}
+
+.meter-value {
+  font-size: 12px;
+  color: #2c4a5e;
+  text-align: right;
+  margin-top: 4px;
+  font-weight: 500;
 } 
