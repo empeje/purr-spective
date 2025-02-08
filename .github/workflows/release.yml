@@ -4,6 +4,9 @@ on:
   release:
     types: [published]
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -46,8 +49,7 @@ jobs:
         files: |
           build/${{ env.EXTENSION_NAME }}-${{ env.RELEASE_VERSION }}.zip
           build/${{ env.EXTENSION_NAME }}-${{ env.RELEASE_VERSION }}.sha256
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Create development build
       run: make dev
@@ -57,8 +59,7 @@ jobs:
       with:
         files: |
           build/${{ env.EXTENSION_NAME }}-dev.zip
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Update release notes
       uses: softprops/action-gh-release@v1
@@ -84,5 +85,4 @@ jobs:
           ```bash
           sha256sum -c ${{ env.EXTENSION_NAME }}-${{ env.RELEASE_VERSION }}.sha256
           ```
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+        token: ${{ secrets.GITHUB_TOKEN }} 
