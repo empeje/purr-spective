@@ -93,4 +93,4 @@ For any questions or concerns about this privacy policy or our privacy practices
 
 ---
 
-© [Current Year] PT Kulkul Teknologi Internasional. All rights reserved. 
+© 2025 PT Kulkul Teknologi Internasional. All rights reserved. 

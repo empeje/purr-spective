@@ -11,6 +11,31 @@ A delightful Chrome extension that helps users evaluate webpage credibility and 
 - Related trustworthy sources
 - Cute cat-themed interface
 
+## Screenshots
+
+<details>
+<summary>Click to see screenshots</summary>
+
+### Main Interface
+![Main Interface](screenshots/1.png)
+*The main sidebar interface showing credibility scores and analysis*
+
+### Fact Checking
+![Fact Check](screenshots/3.png)
+*Detailed fact-checking analysis with trust indicators*
+
+### Analysis View
+![Analysis](screenshots/2.png)
+*In-depth content analysis and trust assessment*
+
+### More
+
+![](screenshots/4.png)
+![](screenshots/5.png)
+![](screenshots/6.png)
+
+</details>
+
 ## Installation
 
 ### From Chrome Web Store (Coming Soon)
