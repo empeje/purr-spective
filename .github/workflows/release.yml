@@ -1,0 +1,88 @@
+name: Build and Release
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    - name: Set up environment
+      run: |
+        echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+        echo "EXTENSION_NAME=purrspective" >> $GITHUB_ENV
+
+    - name: Update version in manifest.json
+      run: |
+        VERSION=$(echo ${{ env.RELEASE_VERSION }} | sed 's/^v//')
+        sed -i "s/\"version\": \".*\"/\"version\": \"$VERSION\"/" manifest.json
+
+    - name: Set up Make
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y make zip
+
+    - name: Build extension
+      run: make build
+
+    - name: Rename zip file
+      run: |
+        mv build/${{ env.EXTENSION_NAME }}-*.zip build/${{ env.EXTENSION_NAME }}-${{ env.RELEASE_VERSION }}.zip
+
+    - name: Generate checksum
+      run: |
+        cd build
+        sha256sum ${{ env.EXTENSION_NAME }}-${{ env.RELEASE_VERSION }}.zip > ${{ env.EXTENSION_NAME }}-${{ env.RELEASE_VERSION }}.sha256
+
+    - name: Upload release assets
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          build/${{ env.EXTENSION_NAME }}-${{ env.RELEASE_VERSION }}.zip
+          build/${{ env.EXTENSION_NAME }}-${{ env.RELEASE_VERSION }}.sha256
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Create development build
+      run: make dev
+
+    - name: Upload development build
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          build/${{ env.EXTENSION_NAME }}-dev.zip
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Update release notes
+      uses: softprops/action-gh-release@v1
+      with:
+        body: |
+          ## PurrSpective ${{ env.RELEASE_VERSION }}
+
+          ### Downloads
+          - [Production Build](https://github.com/${{ github.repository }}/releases/download/${{ env.RELEASE_VERSION }}/${{ env.EXTENSION_NAME }}-${{ env.RELEASE_VERSION }}.zip)
+          - [Development Build](https://github.com/${{ github.repository }}/releases/download/${{ env.RELEASE_VERSION }}/${{ env.EXTENSION_NAME }}-dev.zip)
+          - [SHA256 Checksums](https://github.com/${{ github.repository }}/releases/download/${{ env.RELEASE_VERSION }}/${{ env.EXTENSION_NAME }}-${{ env.RELEASE_VERSION }}.sha256)
+
+          ### Installation
+          1. Download the zip file
+          2. Unzip the file
+          3. Go to chrome://extensions/
+          4. Enable "Developer mode"
+          5. Click "Load unpacked"
+          6. Select the unzipped folder
+
+          ### Verification
+          To verify the download, run:
+          ```bash
+          sha256sum -c ${{ env.EXTENSION_NAME }}-${{ env.RELEASE_VERSION }}.sha256
+          ```
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
