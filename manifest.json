@@ -1,28 +1,36 @@
 {
   "manifest_version": 3,
-  "name": "Perplexity Related Sites",
-  "version": "1.0",
-  "description": "Shows interesting related websites using Perplexity Sonar API",
+  "name": "PurrSpective",
+  "version": "1.0.0",
+  "description": "A cat-themed AI-powered content analyzer that helps evaluate webpage credibility and trustworthiness",
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
   "permissions": [
     "activeTab",
-    "storage",
-    "scripting",
-    "tabs"
+    "storage"
   ],
   "host_permissions": [
     "https://api.perplexity.ai/*"
   ],
-  "action": {
-    "default_popup": "popup/popup.html"
-  },
   "background": {
     "service_worker": "background.js"
   },
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "css": ["sidebar/sidebar.css"],
-      "js": ["config.js", "content.js"]
+      "js": ["config.js", "content.js"],
+      "css": ["sidebar/sidebar.css"]
     }
   ],
   "web_accessible_resources": [
