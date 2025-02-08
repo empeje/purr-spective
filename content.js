@@ -227,6 +227,9 @@ Related Sites
         <div id="related" class="tab-pane">
           ${this.getRelatedContent(htmlContent)}
         </div>
+        <div id="hoax" class="tab-pane">
+          ${this.getFactCheckContent(htmlContent)}
+        </div>
       </div>
     `;
 
@@ -373,6 +376,53 @@ Related Sites
     `;
   }
 
+  getFactCheckContent(htmlContent) {
+    // Extract content between Hoax Analysis and Trust Assessment
+    const hoaxMatch = htmlContent.match(/<h1>Hoax Analysis<\/h1>(.*?)<h1>Trust Assessment<\/h1>/s);
+    if (!hoaxMatch) return 'No fact check available.';
+    
+    return `
+      <div class="fact-check-content">
+        <div class="credibility-details">
+          ${hoaxMatch[1].trim()}
+        </div>
+        <div class="fact-check-indicators">
+          <div class="indicator ${this.getScoreClass(this.getCredibilityScore(htmlContent))}">
+            <span class="indicator-icon">
+              ${this.getFactCheckIcon(this.getCredibilityScore(htmlContent))}
+            </span>
+            <div class="indicator-details">
+              <h4>Credibility Score</h4>
+              <p>${this.getCredibilityScore(htmlContent)}%</p>
+            </div>
+          </div>
+          <div class="fact-check-summary">
+            <h3>Key Findings</h3>
+            ${this.extractKeyFindings(hoaxMatch[1])}
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  getFactCheckIcon(score) {
+    if (score >= 80) return '✅';
+    if (score >= 60) return '⚠️';
+    return '❌';
+  }
+
+  extractKeyFindings(content) {
+    const findings = content
+      .split('\n')
+      .filter(line => line.trim().startsWith('-'))
+      .map(line => line.trim().replace(/^-\s*/, ''))
+      .filter(line => line.length > 0);
+
+    return findings.length > 0 
+      ? `<ul>${findings.map(finding => `<li>${finding}</li>`).join('')}</ul>`
+      : '<p>No specific findings available.</p>';
+  }
+
   addStyles() {
     const style = document.createElement('style');
     style.textContent = `
@@ -425,11 +475,29 @@ Related Sites
 
   switchTab(tabId) {
     this.activeTab = tabId;
+    
+    // Update tab buttons
     this.sidebar.querySelectorAll('.tab-btn').forEach(btn => {
       btn.classList.toggle('active', btn.dataset.tab === tabId);
     });
+    
+    // Update tab panes
     this.sidebar.querySelectorAll('.tab-pane').forEach(pane => {
-      pane.classList.toggle('active', pane.id === tabId);
+      if (pane.id === tabId) {
+        pane.classList.add('active');
+        pane.style.display = 'block';
+        // Trigger reflow for smooth transition
+        void pane.offsetWidth;
+        pane.style.opacity = '1';
+      } else {
+        pane.style.opacity = '0';
+        setTimeout(() => {
+          if (!pane.classList.contains('active')) {
+            pane.style.display = 'none';
+          }
+        }, 300);
+        pane.classList.remove('active');
+      }
     });
   }
 
@@ -464,6 +532,11 @@ Related Sites
     if (score >= 80) return 'high';
     if (score >= 60) return 'medium';
     return 'low';
+  }
+
+  getCredibilityScore(htmlContent) {
+    const match = htmlContent.match(/Credibility Score: (\d+)%/);
+    return match ? parseInt(match[1]) : 0;
   }
 }
 
