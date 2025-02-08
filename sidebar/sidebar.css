@@ -429,4 +429,75 @@
 #size-toggle:hover {
   background: rgba(144, 180, 197, 0.1);
   color: #2c4a5e;
+}
+
+/* Add these styles to your existing CSS */
+
+.logo {
+  font-size: 24px;
+  margin-right: 8px;
+  animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+.loading-spinner {
+  text-align: center;
+  padding: 30px;
+}
+
+.loading-spinner .spinner {
+  font-size: 40px;
+  margin: 20px auto;
+  animation: spin 3s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  33% { content: "😺"; }
+  66% { content: "😸"; }
+  100% { transform: rotate(360deg); }
+}
+
+/* Update tab button styles */
+.tab-btn span {
+  font-size: 18px;
+  margin-right: 5px;
+}
+
+.tab-btn:hover span {
+  animation: wiggle 0.5s ease;
+}
+
+@keyframes wiggle {
+  0%, 100% { transform: rotate(0); }
+  25% { transform: rotate(-10deg); }
+  75% { transform: rotate(10deg); }
+}
+
+/* Update size toggle and refresh button */
+#size-toggle,
+.refresh-button {
+  font-size: 18px;
+}
+
+#size-toggle:hover,
+.refresh-button:hover {
+  animation: bounce 0.5s ease;
+}
+
+/* Update error message */
+.error-message h3 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.error-message h3::before {
+  content: "😿";
+  font-size: 24px;
 } 

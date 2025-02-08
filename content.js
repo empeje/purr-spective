@@ -64,16 +64,16 @@ class PurrSpectiveSidebar {
   showApiKeyPrompt() {
     this.sidebar.innerHTML = `
       <div class="api-key-prompt">
-        <h3>Welcome! 👋</h3>
+        <h3>Meow! 😺</h3>
         <p>To get started, you'll need to add your Perplexity API key.</p>
         <p>Click the extension icon in your browser toolbar to set up your API key.</p>
         <div class="steps">
-          <p>1. Click the extension icon (🔍) in the toolbar</p>
+          <p>1. Click the extension icon (😺) in the toolbar</p>
           <p>2. Enter your Perplexity API key</p>
           <p>3. Click Save</p>
         </div>
         <button onclick="window.location.reload()" class="retry-button">
-          I've added my API key
+          I've added my API key 😸
         </button>
       </div>
     `;
@@ -82,8 +82,8 @@ class PurrSpectiveSidebar {
   showLoading() {
     this.sidebar.innerHTML = `
       <div class="loading-spinner">
-        <div class="spinner"></div>
-        <p>Finding related sites...</p>
+        <div class="spinner">😺</div>
+        <p>Purr-cessing your request...</p>
       </div>
     `;
   }
@@ -162,23 +162,24 @@ Make sure each site has a clear title, working URL, and concise explanation of i
     this.sidebar.innerHTML = `
       <div class="sidebar-header">
         <div class="header-left">
+          <div class="logo">😺</div>
           <h2>PurrSpective</h2>
-          <button id="size-toggle" onclick="document.querySelector('#size-toggle').click()">⇄</button>
+          <button id="size-toggle" onclick="document.querySelector('#size-toggle').click()">🐱</button>
         </div>
         <div class="header-right">
-          <button onclick="window.location.reload()" class="refresh-button">🔄</button>
+          <button onclick="window.location.reload()" class="refresh-button">��</button>
           ${this.toggleButton.outerHTML}
         </div>
       </div>
       <div class="tabs">
         <button class="tab-btn active" data-tab="summary">
-          <span>📝</span> Summary
+          <span>😺</span> Summary
         </button>
         <button class="tab-btn" data-tab="analysis">
-          <span>🤔</span> Analysis
+          <span>🐱</span> Analysis
         </button>
         <button class="tab-btn" data-tab="related">
-          <span>🔗</span> Related
+          <span>😸</span> Related
         </button>
       </div>
       <div class="tab-content">
